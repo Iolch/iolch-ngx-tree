@@ -11,6 +11,7 @@ export interface TreeLevel {
 
 export interface TreeNode {
     template: TemplateRef<any>;
+    index: number;
     level: number;
     item: any;
 }
@@ -34,11 +35,11 @@ export class FlatTree {
     }
     
     private toFlatTree(nodes: any[], level = 0){
-        nodes.forEach((node: any) => this.addNode(node, level));
+        nodes.forEach((node: any, index) => this.addNode(node, index, level));
     }
     
-    private addNode(node: any, level = 0){
-        this._nodes.push({item: node, template: this.getTemplate(level), level});
+    private addNode(node: any, index: number, level = 0){
+        this._nodes.push({item: node, template: this.getTemplate(level), index, level});
 
         const next = level + 1;
         const child = node[this.getProperty(next)];

@@ -2,14 +2,15 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
-import { NgxTreeModule } from 'src/components/tree';
+
+import { ExamplesModule } from 'src/examples';
 
 @NgModule({
   declarations: [
     AppComponent
   ],
   imports: [
-    NgxTreeModule,
+    ExamplesModule,
     BrowserModule
   ],
   providers: [],

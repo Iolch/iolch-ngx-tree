@@ -1,0 +1,22 @@
+<h2>Example</h2>
+
+<ngx-tree class="artists" [config]="config">
+    <ng-template ngxTreeLevel let-artist>
+        <div class="artist">
+            <h3> {{ artist.name }}</h3>
+        </div>
+    </ng-template>
+
+    <ng-template ngxTreeLevel property="albums" let-album>
+        <div class="album">
+            <p>{{ album.name }}</p>
+        </div>
+    </ng-template>
+
+    <ng-template ngxTreeLevel property="songs" let-song let-index="index">
+        <div class="song">        
+            <span>#{{index + 1}} - {{ song.name }}</span>
+            <span>{{ song.duration }}</span>
+        </div>
+    </ng-template>
+</ngx-tree>
