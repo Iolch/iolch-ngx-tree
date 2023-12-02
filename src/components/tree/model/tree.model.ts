@@ -31,13 +31,23 @@ export class FlatTree {
     }
     
     private addNode(node: any, level = 0){
-        this._nodes.push({...node, template: this.levels[level].template, level});
+        this._nodes.push({...node, template: this.getTemplate(level), level});
 
-        const { property } = this.levels[level +1] ?? {};
-        const child = node[property];
-        
+        const next = level + 1;
+        const child = node[this.getProperty(next)];
+
         if(child){
-            this.toFlatTree(child, level + 1);
+            this.toFlatTree(child, next);
         }
+    }
+
+    private getTemplate(level: number): TemplateRef<any> {
+        const {template} = this.levels[level] ?? {};
+        return template;
+    }
+
+    private getProperty(level: number): string {
+        const {property} = this.levels[level] ?? {};
+        return property;
     }
 }
