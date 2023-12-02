@@ -1,0 +1,3 @@
+<ng-container *ngFor="let node of config?.nodes">
+    <ng-container *ngTemplateOutlet="treeNodeTemplate; context: {$implicit: node}"></ng-container>
+</ng-container>
