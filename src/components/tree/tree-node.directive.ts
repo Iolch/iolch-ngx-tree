@@ -4,10 +4,11 @@ import {Directive, Input, TemplateRef, ViewContainerRef} from '@angular/core';
   selector: '[ngxTreeNode]',
 })
 export class NgxTreeNodeDirective {
+  @Input() property : string;
 
-  constructor(
-    private templateRef: TemplateRef<any>
-  ) {}
+  constructor(private templateRef: TemplateRef<any>) {
+    this.property = 'root';
+  }
 
   public get template(): TemplateRef<any> {
     return this.templateRef;

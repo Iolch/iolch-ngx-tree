@@ -1,3 +1,9 @@
-<ng-container *ngFor="let node of config?.nodes">
-    <ng-container *ngTemplateOutlet="treeNodeTemplate; context: {$implicit: node}"></ng-container>
+<ng-container *ngIf="config">
+    <ng-container *ngFor="let node of config.nodes">
+        <ng-container *ngTemplateOutlet="treeLevels[0].template; context: {$implicit: node}"></ng-container>
+    
+        <ng-container *ngFor="let subnode of node[treeLevels[1].property]">
+            <ng-container *ngTemplateOutlet="treeLevels[1].template; context: {$implicit: subnode}"></ng-container>
+        </ng-container>
+    </ng-container>
 </ng-container>

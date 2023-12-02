@@ -1,7 +1,12 @@
-import { Component, ContentChild, Input, TemplateRef, ViewChild } from '@angular/core';
+import { Component, ContentChildren, Input, QueryList, TemplateRef, ViewChild } from '@angular/core';
 
 import { NgxTreeConfig } from './model/tree.model';
 import { NgxTreeNodeDirective } from './tree-node.directive';
+
+interface Level {
+  template: TemplateRef<any>;
+  property: string;
+}
 
 @Component({
   selector: 'ngx-tree',
@@ -9,11 +14,22 @@ import { NgxTreeNodeDirective } from './tree-node.directive';
 })
 export class NgxTreeComponent {
   
-  protected treeNodeTemplate!: TemplateRef<any>;
+  protected treeLevels!: Level[];
   
   @Input() config!: NgxTreeConfig<any>;
 
-  @ContentChild(NgxTreeNodeDirective) set treeNode(treeNode: NgxTreeNodeDirective) {
-    this.treeNodeTemplate = treeNode.template;
+  @ContentChildren(NgxTreeNodeDirective) set treeNode(treeNodes: QueryList<NgxTreeNodeDirective>) {
+    console.log('treeNodes', treeNodes);
+
+    treeNodes.forEach((treeNode: NgxTreeNodeDirective, level) => {
+      this.treeLevels[level] = {
+        template: treeNode.template,
+        property: treeNode.property
+      };
+    });
+  }
+
+  constructor() {
+    this.treeLevels = [];
   }
 }
