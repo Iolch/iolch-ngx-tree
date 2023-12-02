@@ -1,4 +1,5 @@
 import { TemplateRef } from "@angular/core";
+import { Subject, debounceTime, filter, map, tap } from "rxjs";
 
 export interface NgxTreeConfig<T> {
     nodes: T[];
@@ -6,6 +7,7 @@ export interface NgxTreeConfig<T> {
 
 export interface TreeLevel {
     template: TemplateRef<any>;
+    searchProperty?: string;
     property: string;
 }
 
@@ -18,12 +20,17 @@ export interface TreeNode {
 
 
 export class FlatTree {
-    private levels: TreeLevel[];
     private _nodes: TreeNode[];
+    private levels: TreeLevel[];
+    private _filtered?: TreeNode[];
+    public readonly search: Subject<string>;
 
     constructor(levels: TreeLevel[]) {
-        this.levels = levels;
         this._nodes = [];
+        this.levels = levels;
+        this.search = new Subject<string>();
+        
+        this.initEvents();
     }
 
     public set nodes(nodes: any[]) {
@@ -32,6 +39,25 @@ export class FlatTree {
 
     public get nodes(): TreeNode[] {
         return this._nodes;
+    }
+
+    public get filtered(): TreeNode[] | undefined {
+        return this._filtered;
+    }
+
+    private initEvents(): void {
+        this.search.pipe(
+            debounceTime(300),
+            tap(() => delete this._filtered),
+            filter((search: string) => !!search),
+            map((filter: string) => this.formatSearch(filter))
+        ).subscribe((filter: string) => {
+            this._filtered = this._nodes.filter((node: TreeNode) => {
+                const property = this.getSearchProperty(node.level);
+                const search = property ? this.formatSearch(node.item[property]) : '';
+                return search.includes(filter)
+            });
+        });
     }
     
     private toFlatTree(nodes: any[], level = 0){
@@ -57,5 +83,14 @@ export class FlatTree {
     private getProperty(level: number): string {
         const {property} = this.levels[level] ?? {};
         return property;
+    }
+
+    private getSearchProperty(level: number): string | undefined {
+        const {searchProperty} = this.levels[level] ?? {};
+        return searchProperty;
+    }
+
+    private formatSearch(search: string): string {
+        return search.toLowerCase().trim();
     }
 }

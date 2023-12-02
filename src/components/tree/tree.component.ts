@@ -13,9 +13,13 @@ export class NgxTreeComponent {
   @Input() config!: NgxTreeConfig<any>;
 
   @ContentChildren(NgxTreeLevelDirective) set treeLevel(treeLevels: QueryList<NgxTreeLevelDirective>) {
-    const levels: TreeLevel[] = treeLevels.map(({template, property}: NgxTreeLevelDirective) => ({template, property}));
+    const levels: TreeLevel[] = treeLevels.map(({template, property, searchableBy}: NgxTreeLevelDirective) => ({template, property, searchProperty: searchableBy}));
 
     this.flatTree = new FlatTree(levels);
     this.flatTree.nodes = this.config.nodes;
   }  
+
+  public search(filter: string): void {
+    this.flatTree.search.next(filter);
+  }
 }

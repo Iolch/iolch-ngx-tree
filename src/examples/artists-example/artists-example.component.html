@@ -1,7 +1,9 @@
 <h2>Example</h2>
 
-<ngx-tree class="artists" [config]="config">
-    <ng-template ngxTreeLevel let-artist>
+<input type="text" (input)="ngxTree.search(input.value)" #input>
+
+<ngx-tree class="artists" [config]="config" #ngxTree>
+    <ng-template ngxTreeLevel searchableBy="name" let-artist>
         <div class="artist">
             <h3> {{ artist.name }}</h3>
         </div>
