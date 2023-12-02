@@ -1,9 +1,9 @@
 import {Directive, Input, TemplateRef, ViewContainerRef} from '@angular/core';
 
 @Directive({
-  selector: '[ngxTreeNode]',
+  selector: '[ngxTreeLevel]',
 })
-export class NgxTreeNodeDirective {
+export class NgxTreeLevelDirective {
   @Input() property : string;
 
   constructor(private templateRef: TemplateRef<any>) {

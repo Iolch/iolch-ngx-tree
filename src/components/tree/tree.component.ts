@@ -1,6 +1,6 @@
 import { Component, ContentChildren, Input, QueryList, TemplateRef, ViewChild } from '@angular/core';
 
-import { NgxTreeNodeDirective } from './tree-node.directive';
+import { NgxTreeLevelDirective } from './tree-level.directive';
 import { FlatTree, NgxTreeConfig, TreeLevel } from './model/tree.model';
 
 @Component({
@@ -12,8 +12,8 @@ export class NgxTreeComponent {
 
   @Input() config!: NgxTreeConfig<any>;
 
-  @ContentChildren(NgxTreeNodeDirective) set treeNode(treeNodes: QueryList<NgxTreeNodeDirective>) {
-    const levels: TreeLevel[] = treeNodes.map(({template, property}: NgxTreeNodeDirective) => ({template, property}));
+  @ContentChildren(NgxTreeLevelDirective) set treeLevel(treeLevels: QueryList<NgxTreeLevelDirective>) {
+    const levels: TreeLevel[] = treeLevels.map(({template, property}: NgxTreeLevelDirective) => ({template, property}));
 
     this.flatTree = new FlatTree(levels);
     this.flatTree.nodes = this.config.nodes;

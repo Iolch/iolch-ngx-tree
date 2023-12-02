@@ -1,15 +1,15 @@
 import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 import { NgxTreeComponent } from './tree.component';
-import { NgxTreeNodeDirective } from './tree-node.directive';
-import { CommonModule } from '@angular/common';
+import { NgxTreeLevelDirective } from './tree-level.directive';
 
 @NgModule({
   declarations: [
     NgxTreeComponent,
-    NgxTreeNodeDirective,
+    NgxTreeLevelDirective,
   ],
   imports: [CommonModule],
-  exports: [NgxTreeComponent, NgxTreeNodeDirective],
+  exports: [NgxTreeComponent, NgxTreeLevelDirective],
 })
 export class NgxTreeModule { }
