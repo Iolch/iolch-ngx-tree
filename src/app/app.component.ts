@@ -4,7 +4,7 @@ import { NgxTreeConfig } from 'src/components/tree';
 
 interface Teacher {
   name: string;
-  classes: Classes[];
+  classes?: Classes[];
 }
 
 interface Classes {
@@ -29,7 +29,23 @@ export class AppComponent {
             {
               name: 'Introduction to functional programming',
               hours: 180,
-            }
+            },
+            {
+              name: 'Introduction to concurrent programming',
+              hours: 180,
+            },
+          ]
+        },
+        {
+          name: 'Ana'
+        },
+        {
+          name: 'Mary',
+          classes: [
+            {
+              name: 'Arts and Craft',
+              hours: 180,
+            },
           ]
         }
       ],
