@@ -1,9 +1,9 @@
 <ngx-tree [config]="config">
-    <ng-template ngxTreeNode let-node>
-        <p> {{node.level}} - {{ node.name }}</p>
+    <ng-template ngxTreeNode let-node let-level="level">
+        <p> {{level}} - {{ node.name }}</p>
     </ng-template>
 
-    <ng-template ngxTreeNode property="classes" let-node>
-        <p> >> {{node.level}} - {{ node.name }}</p>
+    <ng-template ngxTreeNode property="classes" let-node let-level="level">
+        <p> >> {{level}} - {{ node.name }}</p>
     </ng-template>
 </ngx-tree>
