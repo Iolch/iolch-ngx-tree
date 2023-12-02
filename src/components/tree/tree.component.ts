@@ -13,14 +13,7 @@ export class NgxTreeComponent {
   @Input() config!: NgxTreeConfig<any>;
 
   @ContentChildren(NgxTreeNodeDirective) set treeNode(treeNodes: QueryList<NgxTreeNodeDirective>) {
-    const levels: TreeLevel[] = [];
-    
-    treeNodes.forEach((treeNode: NgxTreeNodeDirective, level) => {
-      levels[level] = {
-        template: treeNode.template,
-        property: treeNode.property
-      };
-    });
+    const levels: TreeLevel[] = treeNodes.map(({template, property}: NgxTreeNodeDirective) => ({template, property}));
 
     this.flatTree = new FlatTree(levels);
     this.flatTree.nodes = this.config.nodes;
