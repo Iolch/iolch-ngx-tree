@@ -4,12 +4,12 @@ import {Directive, Input, TemplateRef, ViewContainerRef} from '@angular/core';
   selector: '[ngxTreeLevel]',
 })
 export class NgxTreeLevelDirective {
-  @Input() property : string;
+  @Input() name : string;
 
   @Input() searchableBy !: string;
 
   constructor(private templateRef: TemplateRef<any>) {
-    this.property = 'root';
+    this.name = 'root';
   }
 
   public get template(): TemplateRef<any> {

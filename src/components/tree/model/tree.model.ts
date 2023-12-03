@@ -13,15 +13,14 @@ export interface NgxTreeConfig<T> {
 export interface TreeLevel {
     template: TemplateRef<any>;
     searchProperty?: string;
-    property: string;
     index: number;
+    name: string;
 }
 
 export interface TreeNode {
     ascendant?: TreeNode;
-    // treeLevel: TreeLevel;
+    relativeIndex: number;
     level: TreeLevel;
-    index: number;
     item: any;
 }
 
@@ -60,9 +59,8 @@ export class FlatTree {
             map(({search, showAscendants}: SearchEvent) => ({showAscendants, search: this.formatSearch(search)}))
         ).subscribe(({search, showAscendants}: SearchEvent) => {
             const filtered = this._nodes.filter((node: TreeNode) => {
-                const property = node.level.searchProperty ?? '';
-                const filter = this.formatSearch(node.item[property]);
-                return filter.includes(search)
+                const searchProperty = node.level.searchProperty ?? '';
+                return this.formatSearch(node.item[searchProperty]).includes(search);
             });
 
             if(!showAscendants){
@@ -77,18 +75,18 @@ export class FlatTree {
     }
 
     private toFlatTree(nodes: any[], level: TreeLevel, ascendant?: TreeNode){
-        nodes.forEach((node: any, index) => this.addNode(node, index, level, ascendant));
+        nodes.forEach((node: any, relativeIndex) => this.addNode(node, relativeIndex, level, ascendant));
     }
     
-    private addNode(item: any, index: number, level: TreeLevel, ascendant?: TreeNode){
-        const node = {item, index, level, ascendant}
+    private addNode(item: any, relativeIndex: number, level: TreeLevel, ascendant?: TreeNode){
+        const node = {item, relativeIndex, level, ascendant}
         this._nodes.push(node);
 
-        const next = this.getTreeLevel(level.index + 1);
-        const child = node.item[next.property];
+        const descendantLevel = this.getTreeLevel(level.index + 1);
+        const childNode = node.item[descendantLevel.name];
 
-        if(child){
-            this.toFlatTree(child, next, node);
+        if(childNode){
+            this.toFlatTree(childNode, descendantLevel, node);
         }
     }
 

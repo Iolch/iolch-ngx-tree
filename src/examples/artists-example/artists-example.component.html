@@ -10,15 +10,15 @@
             </div>
         </ng-template>
     
-        <ng-template ngxTreeLevel searchableBy="name" property="albums" let-album>
+        <ng-template ngxTreeLevel searchableBy="name" name="albums" let-album>
             <div class="album">
                 <p>{{ album.name }}</p>
             </div>
         </ng-template>
     
-        <ng-template ngxTreeLevel searchableBy="title" property="songs" let-song let-index="index">
+        <ng-template ngxTreeLevel searchableBy="title" name="songs" let-song let-relativeIndex="relativeIndex">
             <div class="song">        
-                <span>#{{index + 1}} - {{ song.title }}</span>
+                <span>#{{relativeIndex + 1}} - {{ song.title }}</span>
                 <span>{{ song.duration }}</span>
             </div>
         </ng-template>

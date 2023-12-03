@@ -1,7 +1,7 @@
 <ng-container *ngIf="flatTree">
     <ng-container *ngIf="flatTree.filtered">
         <ng-container *ngFor="let node of flatTree.filtered">
-            <ng-container *ngTemplateOutlet="node.level.template; context: {$implicit: node.item, index: node.index, level: node.level.index}"></ng-container>
+            <ng-container *ngTemplateOutlet="node.level.template; context: {$implicit: node.item, relativeIndex: node.relativeIndex, level: node.level.index}"></ng-container>
         </ng-container>
 
         <ng-container *ngIf="flatTree.filtered.length === 0">
@@ -11,7 +11,7 @@
 
     <ng-container *ngIf="!flatTree.filtered">
         <ng-container *ngFor="let node of flatTree.nodes">
-            <ng-container *ngTemplateOutlet="node.level.template; context: {$implicit: node.item, index: node.index, level: node.level.index}"></ng-container>
+            <ng-container *ngTemplateOutlet="node.level.template; context: {$implicit: node.item, relativeIndex: node.relativeIndex, level: node.level.index}"></ng-container>
         </ng-container>
     </ng-container>
 </ng-container>
