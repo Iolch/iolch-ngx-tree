@@ -22,7 +22,15 @@ export class TreeLevel {
         this.index = data.index;
         this.template = data.template;
         this.name = data.name ?? 'root';
-        this.searchProperty = formatString(data.searchProperty ?? '');
+        this.searchProperty = data.searchProperty ?? '';
+    }
+
+    public static getDescendantLevel(levels: TreeLevel[], level: TreeLevel): TreeLevel {
+        return levels[level.index + 1];
+    }
+
+    public static getRootLevel(levels: TreeLevel[]) {
+        return levels[0];
     }
 }
 
@@ -49,7 +57,7 @@ export class FlatTree {
     }
 
     public set nodes(nodes: any[]) {
-        this.toFlatTree(nodes, this.getTreeLevel(0));
+        this.toFlatTree(nodes, TreeLevel.getRootLevel(this.levels));
     }
 
     public get nodes(): TreeNode[] {
@@ -66,20 +74,16 @@ export class FlatTree {
             tap(() => delete this._filtered),
             filter(({search}: SearchEvent) => !!search),
             map(({search, showAscendants}: SearchEvent) => ({showAscendants, search: formatString(search)}))
-        ).subscribe(({search, showAscendants}: SearchEvent) => {
-            const filtered = this._nodes.filter((node: TreeNode) => {
-                const { searchProperty } = node.level;
-                return node.item[searchProperty].includes(search);
-            });
+            ).subscribe(({search, showAscendants}: SearchEvent) => {
+                const filtered = this._nodes.filter((node: TreeNode) => formatString(node.item[node.level.searchProperty]).includes(search));
 
-            if(!showAscendants){
-                this._filtered = filtered;
-                return;
-            }
-
-            const filteredWithAscendants: TreeNode[] = [];
-            filtered.forEach((node: TreeNode) => this.addAscendantNode(node, filteredWithAscendants));
-            this._filtered = filteredWithAscendants;
+                if(showAscendants){
+                    const filteredWithAscendants: TreeNode[] = [];
+                    filtered.forEach((node: TreeNode) => this.addAscendantNode(node, filteredWithAscendants));
+                    this._filtered = filteredWithAscendants;
+                }else {
+                    this._filtered = filtered;
+                }
         });
     }
 
@@ -91,8 +95,8 @@ export class FlatTree {
         const node = {item, relativeIndex, level, ascendant}
         this._nodes.push(node);
 
-        const descendantLevel = this.getTreeLevel(level.index + 1);
-        const childNode = node.item[descendantLevel.name];
+        const descendantLevel = TreeLevel.getDescendantLevel(this.levels, level);
+        const childNode = node.item[descendantLevel?.name];
 
         if(childNode){
             this.toFlatTree(childNode, descendantLevel, node);
@@ -101,15 +105,10 @@ export class FlatTree {
 
     private addAscendantNode(node: TreeNode, nodes: TreeNode[]): void {
         const { ascendant } = node;
-
         if(ascendant && !nodes.includes(ascendant)){
             this.addAscendantNode(ascendant, nodes);
         }
 
         nodes.push(node);
-    }
-
-    private getTreeLevel(level: number): TreeLevel {
-        return this.levels[level] ?? {};
     }
 }
