@@ -5,11 +5,11 @@ import { formatString } from "src/utils";
 
 export interface SearchEvent {
     search: string;
-    showAscendants: boolean;
+    includeAscendants: boolean;
 }
 export interface NgxTreeConfig<T> {
     nodes: T[];
-    showAscendantsOnSearch?: boolean;
+    includeAscendantsOnSearch?: boolean;
 };
 
 export class TreeLevel {
@@ -25,7 +25,7 @@ export class TreeLevel {
         this.searchProperty = data.searchProperty ?? '';
     }
 
-    public static getDescendantLevel(levels: TreeLevel[], level: TreeLevel): TreeLevel {
+    public static getDescendantsLevel(levels: TreeLevel[], level: TreeLevel): TreeLevel {
         return levels[level.index + 1];
     }
 
@@ -73,11 +73,11 @@ export class FlatTree {
             debounceTime(300),
             tap(() => delete this._filtered),
             filter(({search}: SearchEvent) => !!search),
-            map(({search, showAscendants}: SearchEvent) => ({showAscendants, search: formatString(search)}))
-            ).subscribe(({search, showAscendants}: SearchEvent) => {
+            map(({search, includeAscendants}: SearchEvent) => ({includeAscendants, search: formatString(search)}))
+            ).subscribe(({search, includeAscendants}: SearchEvent) => {
                 const filtered = this._nodes.filter((node: TreeNode) => formatString(node.item[node.level.searchProperty]).includes(search));
 
-                if(showAscendants){
+                if(includeAscendants){
                     const filteredWithAscendants: TreeNode[] = [];
                     filtered.forEach((node: TreeNode) => this.addAscendantNode(node, filteredWithAscendants));
                     this._filtered = filteredWithAscendants;
@@ -95,11 +95,11 @@ export class FlatTree {
         const node = {item, relativeIndex, level, ascendant}
         this._nodes.push(node);
 
-        const descendantLevel = TreeLevel.getDescendantLevel(this.levels, level);
-        const childNode = node.item[descendantLevel?.name];
+        const descendantsLevel = TreeLevel.getDescendantsLevel(this.levels, level);
+        const children = node.item[descendantsLevel?.name];
 
-        if(childNode){
-            this.toFlatTree(childNode, descendantLevel, node);
+        if(children){
+            this.toFlatTree(children, descendantsLevel, node);
         }
     }
 

@@ -29,7 +29,7 @@ export class NgxTreeComponent {
   }  
 
   public search(search: string): void {
-    const { showAscendantsOnSearch: showAscendants = false} = this.config;
-    this.flatTree.search.next({search, showAscendants});
+    const { includeAscendantsOnSearch: includeAscendants = false} = this.config;
+    this.flatTree.search.next({search, includeAscendants});
   }
 }
