@@ -1,24 +1,26 @@
 <h2>Example</h2>
 
-<input type="text" (input)="ngxTree.search(input.value)" #input>
+<div class="container">
+    <input type="text" class="search-input" placeholder="Search by artist, album or song" (input)="ngxTree.search(input.value)" #input>
 
-<ngx-tree class="artists" [config]="config" #ngxTree>
-    <ng-template ngxTreeLevel searchableBy="name" let-artist>
-        <div class="artist">
-            <h3> {{ artist.name }}</h3>
-        </div>
-    </ng-template>
-
-    <ng-template ngxTreeLevel property="albums" let-album>
-        <div class="album">
-            <p>{{ album.name }}</p>
-        </div>
-    </ng-template>
-
-    <ng-template ngxTreeLevel property="songs" let-song let-index="index">
-        <div class="song">        
-            <span>#{{index + 1}} - {{ song.name }}</span>
-            <span>{{ song.duration }}</span>
-        </div>
-    </ng-template>
-</ngx-tree>
+    <ngx-tree [config]="config" #ngxTree>
+        <ng-template ngxTreeLevel searchableBy="name" let-artist>
+            <div class="artist">
+                <h3> {{ artist.name }}</h3>
+            </div>
+        </ng-template>
+    
+        <ng-template ngxTreeLevel searchableBy="name" property="albums" let-album>
+            <div class="album">
+                <p>{{ album.name }}</p>
+            </div>
+        </ng-template>
+    
+        <ng-template ngxTreeLevel searchableBy="title" property="songs" let-song let-index="index">
+            <div class="song">        
+                <span>#{{index + 1}} - {{ song.title }}</span>
+                <span>{{ song.duration }}</span>
+            </div>
+        </ng-template>
+    </ngx-tree>
+</div>

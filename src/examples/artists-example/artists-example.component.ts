@@ -13,7 +13,7 @@ interface Album {
 }
 
 interface Song {
-  name: string;
+  title: string;
   duration: string;
 }
 
@@ -35,11 +35,11 @@ export class ArtistsExampleComponent {
               name: "Eclipse of Dreams",
               songs: [
                 {
-                  name: "Starlight Serenade",
+                  title: "Starlight Serenade",
                   duration: "3:30"
                 },
                 {
-                  name: "Moonlit Sonata",
+                  title: "Moonlit Sonata",
                   duration: "4:15"
                 }
               ]
@@ -48,11 +48,11 @@ export class ArtistsExampleComponent {
               name: "Whispers in the Cosmos",
               songs: [
                 {
-                  name: "Galactic Echoes",
+                  title: "Galactic Echoes",
                   duration: "2:45"
                 },
                 {
-                  name: "Celestial Voyage",
+                  title: "Celestial Voyage",
                   duration: "5:00"
                 }
               ]
@@ -66,11 +66,11 @@ export class ArtistsExampleComponent {
               name: "Electric Dreams",
               songs: [
                 {
-                  name: "Neon Nights",
+                  title: "Neon Nights",
                   "duration": "3:10"
                 },
                 {
-                  name: "Synthetic Stardust",
+                  title: "Synthetic Stardust",
                   "duration": "4:30"
                 }
               ]
@@ -79,11 +79,11 @@ export class ArtistsExampleComponent {
               name: "Cybernetic Serenity",
               songs: [
                 {
-                  name: "Techno Twilight",
+                  title: "Techno Twilight",
                   duration: "2:15"
                 },
                 {
-                  name: "Digital Dreamscape",
+                  title: "Digital Dreamscape",
                   duration: "6:00"
                 }
               ]
