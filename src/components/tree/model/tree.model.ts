@@ -1,8 +1,13 @@
 import { TemplateRef } from "@angular/core";
 import { Subject, debounceTime, filter, map, tap } from "rxjs";
 
+export interface SearchEvent {
+    search: string;
+    showAscendants: boolean;
+}
 export interface NgxTreeConfig<T> {
     nodes: T[];
+    showAscendantsOnSearch?: boolean;
 };
 
 export interface TreeLevel {
@@ -13,6 +18,7 @@ export interface TreeLevel {
 
 export interface TreeNode {
     template: TemplateRef<any>;
+    ascendant?: TreeNode;
     index: number;
     level: number;
     item: any;
@@ -23,12 +29,12 @@ export class FlatTree {
     private _nodes: TreeNode[];
     private levels: TreeLevel[];
     private _filtered?: TreeNode[];
-    public readonly search: Subject<string>;
+    public readonly search: Subject<SearchEvent>;
 
     constructor(levels: TreeLevel[]) {
         this._nodes = [];
         this.levels = levels;
-        this.search = new Subject<string>();
+        this.search = new Subject<SearchEvent>();
         
         this.initEvents();
     }
@@ -49,29 +55,50 @@ export class FlatTree {
         this.search.pipe(
             debounceTime(300),
             tap(() => delete this._filtered),
-            filter((search: string) => !!search),
-            map((filter: string) => this.formatSearch(filter))
-        ).subscribe((filter: string) => {
-            this._filtered = this._nodes.filter((node: TreeNode) => {
+            filter(({search}: SearchEvent) => !!search),
+            map(({search, showAscendants}: SearchEvent) => ({showAscendants, search: this.formatSearch(search)}))
+        ).subscribe(({search, showAscendants}: SearchEvent) => {
+            const filtered = this._nodes.filter((node: TreeNode) => {
                 const property = this.getSearchProperty(node.level);
-                const search = property ? this.formatSearch(node.item[property]) : '';
-                return search.includes(filter)
+                const filter = property ? this.formatSearch(node.item[property]) : '';
+                return filter.includes(search)
             });
+
+            if(showAscendants){
+                const filteredWithAscendants: TreeNode[] = [];
+                filtered.forEach((node: TreeNode) => this.addAscendantNode(node, filteredWithAscendants));
+                this._filtered = filteredWithAscendants;
+            }else {
+                this._filtered = filtered;
+            }
+            
+            console.log('_filtered', this._filtered );
         });
     }
-    
-    private toFlatTree(nodes: any[], level = 0){
-        nodes.forEach((node: any, index) => this.addNode(node, index, level));
+
+    private addAscendantNode(node: TreeNode, nodes: TreeNode[]): void {
+        const { ascendant } = node;
+
+        if(ascendant && nodes.findIndex((item) => item === ascendant) === -1){
+            this.addAscendantNode(ascendant, nodes);
+        }
+
+        nodes.push(node);
     }
     
-    private addNode(node: any, index: number, level = 0){
-        this._nodes.push({item: node, template: this.getTemplate(level), index, level});
+    private toFlatTree(nodes: any[], level = 0, ascendant?: TreeNode){
+        nodes.forEach((node: any, index) => this.addNode(node, index, level, ascendant));
+    }
+    
+    private addNode(item: any, index: number, level = 0, ascendant?: TreeNode){
+        const node = {item, template: this.getTemplate(level), index, level, ascendant}
+        this._nodes.push(node);
 
         const next = level + 1;
-        const child = node[this.getProperty(next)];
+        const child = node.item[this.getProperty(next)];
 
         if(child){
-            this.toFlatTree(child, next);
+            this.toFlatTree(child, next, node);
         }
     }
 

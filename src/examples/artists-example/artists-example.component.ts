@@ -27,6 +27,7 @@ export class ArtistsExampleComponent {
 
   constructor() {
     this.config = {
+      showAscendantsOnSearch: true,
       nodes: [
         {
           name: "Sylvia Sky",

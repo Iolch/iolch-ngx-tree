@@ -19,7 +19,8 @@ export class NgxTreeComponent {
     this.flatTree.nodes = this.config.nodes;
   }  
 
-  public search(filter: string): void {
-    this.flatTree.search.next(filter);
+  public search(search: string): void {
+    const { showAscendantsOnSearch: showAscendants = false} = this.config;
+    this.flatTree.search.next({search, showAscendants});
   }
 }
