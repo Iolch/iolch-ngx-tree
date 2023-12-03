@@ -64,28 +64,17 @@ export class FlatTree {
                 return filter.includes(search)
             });
 
-            if(showAscendants){
-                const filteredWithAscendants: TreeNode[] = [];
-                filtered.forEach((node: TreeNode) => this.addAscendantNode(node, filteredWithAscendants));
-                this._filtered = filteredWithAscendants;
-            }else {
+            if(!showAscendants){
                 this._filtered = filtered;
+                return;
             }
-            
-            console.log('_filtered', this._filtered );
+
+            const filteredWithAscendants: TreeNode[] = [];
+            filtered.forEach((node: TreeNode) => this.addAscendantNode(node, filteredWithAscendants));
+            this._filtered = filteredWithAscendants;
         });
     }
 
-    private addAscendantNode(node: TreeNode, nodes: TreeNode[]): void {
-        const { ascendant } = node;
-
-        if(ascendant && nodes.findIndex((item) => item === ascendant) === -1){
-            this.addAscendantNode(ascendant, nodes);
-        }
-
-        nodes.push(node);
-    }
-    
     private toFlatTree(nodes: any[], level = 0, ascendant?: TreeNode){
         nodes.forEach((node: any, index) => this.addNode(node, index, level, ascendant));
     }
@@ -102,6 +91,17 @@ export class FlatTree {
         }
     }
 
+    private addAscendantNode(node: TreeNode, nodes: TreeNode[]): void {
+        const { ascendant } = node;
+
+        if(ascendant && !nodes.includes(ascendant)){
+            this.addAscendantNode(ascendant, nodes);
+        }
+
+        nodes.push(node);
+    }
+    
+    
     private getTemplate(level: number): TemplateRef<any> {
         const {template} = this.levels[level] ?? {};
         return template;
