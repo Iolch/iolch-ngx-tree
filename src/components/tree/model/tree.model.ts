@@ -1,5 +1,5 @@
 import { TemplateRef } from "@angular/core";
-import { Subject, debounceTime, filter, map, tap } from "rxjs";
+import { Observable, Subject, debounceTime, filter, iif, map, of, switchMap, tap } from "rxjs";
 
 import { stringFormatter } from "src/utils";
 
@@ -43,11 +43,18 @@ export class TreeLevel {
     }
 }
 
-export interface TreeNode {
-    ascendant?: TreeNode;
-    relativeIndex: number;
-    level: TreeLevel;
-    item: any;
+export class TreeNode {
+    public readonly item: any;
+    public readonly level: TreeLevel;
+    public readonly ascendant?: TreeNode;
+    public readonly relativeIndex: number;
+
+    constructor(data: any){
+        this.item = data.item;
+        this.level = data.level;
+        this.ascendant = data.ascendant;
+        this.relativeIndex = data.relativeIndex;
+    }
 }
 
 
@@ -78,29 +85,33 @@ export class FlatTree {
     }
 
     private initEvents(): void {
+        const $filtered = (event: SearchEvent) : Observable<TreeNode[]> => of(this.matchNodesToSearch(event));
+
+        const $filteredWithAscendants = (event: SearchEvent) : Observable<TreeNode[]> => {
+            const filteredWithAscendants: TreeNode[] = [];
+            this.matchNodesToSearch(event).forEach((node: TreeNode) => this.addAscendantNode(node, filteredWithAscendants));
+            return of(filteredWithAscendants);
+        }
+
         this.search.pipe(
             debounceTime(300),
             tap(() => delete this._filtered),
             filter(({search}: SearchEvent) => !!search),
-            ).subscribe(({search, includeAscendants, formatter}: SearchEvent) => {
-                const filtered = this._nodes.filter((node: TreeNode) => formatter(node.item[node.level.searchProperty]).includes(search));
-
-                if(includeAscendants){
-                    const filteredWithAscendants: TreeNode[] = [];
-                    filtered.forEach((node: TreeNode) => this.addAscendantNode(node, filteredWithAscendants));
-                    this._filtered = filteredWithAscendants;
-                }else {
-                    this._filtered = filtered;
-                }
-        });
+            switchMap((event: SearchEvent) => iif(() => event.includeAscendants, $filteredWithAscendants(event), $filtered(event)))
+            ).subscribe((filtered: TreeNode[]) => this._filtered = filtered);
     }
 
     private toFlatTree(nodes: any[], level: TreeLevel, ascendant?: TreeNode){
         nodes.forEach((node: any, relativeIndex) => this.addNode(node, relativeIndex, level, ascendant));
     }
     
+    private matchNodesToSearch(event: SearchEvent): TreeNode[] {
+        const {formatter, search} = event;
+        return this._nodes.filter((node: TreeNode) => formatter(node.item[node.level.searchProperty]).includes(search));
+    }
+
     private addNode(item: any, relativeIndex: number, level: TreeLevel, ascendant?: TreeNode){
-        const node = {item, relativeIndex, level, ascendant}
+        const node = new TreeNode({item, relativeIndex, level, ascendant});
         this._nodes.push(node);
 
         const descendantsLevel = TreeLevel.getDescendantsLevel(this.levels, level);
