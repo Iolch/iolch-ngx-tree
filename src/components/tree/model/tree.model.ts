@@ -1,6 +1,8 @@
 import { TemplateRef } from "@angular/core";
 import { Subject, debounceTime, filter, map, tap } from "rxjs";
 
+import { formatString } from "src/utils";
+
 export interface SearchEvent {
     search: string;
     showAscendants: boolean;
@@ -10,11 +12,18 @@ export interface NgxTreeConfig<T> {
     showAscendantsOnSearch?: boolean;
 };
 
-export interface TreeLevel {
-    template: TemplateRef<any>;
-    searchProperty?: string;
-    index: number;
-    name: string;
+export class TreeLevel {
+    public readonly name: string;
+    public readonly index: number;
+    public readonly searchProperty: string;
+    public readonly template: TemplateRef<any>;
+
+    constructor(data: any){
+        this.index = data.index;
+        this.template = data.template;
+        this.name = data.name ?? 'root';
+        this.searchProperty = formatString(data.searchProperty ?? '');
+    }
 }
 
 export interface TreeNode {
@@ -56,11 +65,11 @@ export class FlatTree {
             debounceTime(300),
             tap(() => delete this._filtered),
             filter(({search}: SearchEvent) => !!search),
-            map(({search, showAscendants}: SearchEvent) => ({showAscendants, search: this.formatSearch(search)}))
+            map(({search, showAscendants}: SearchEvent) => ({showAscendants, search: formatString(search)}))
         ).subscribe(({search, showAscendants}: SearchEvent) => {
             const filtered = this._nodes.filter((node: TreeNode) => {
-                const searchProperty = node.level.searchProperty ?? '';
-                return this.formatSearch(node.item[searchProperty]).includes(search);
+                const { searchProperty } = node.level;
+                return node.item[searchProperty].includes(search);
             });
 
             if(!showAscendants){
@@ -102,9 +111,5 @@ export class FlatTree {
 
     private getTreeLevel(level: number): TreeLevel {
         return this.levels[level] ?? {};
-    }
-
-    private formatSearch(search: string): string {
-        return search.toLowerCase().trim();
     }
 }
