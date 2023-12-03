@@ -16,7 +16,7 @@ export class NgxTreeComponent {
   @Input() config!: NgxTreeConfig<any>;
 
   @ContentChildren(NgxTreeLevelDirective) set treeLevel(treeLevels: QueryList<NgxTreeLevelDirective>) {
-    const levels: TreeLevel[] = treeLevels.map(({template, property, searchableBy}: NgxTreeLevelDirective) => ({template, property, searchProperty: searchableBy}));
+    const levels: TreeLevel[] = treeLevels.map(({template, property, searchableBy}: NgxTreeLevelDirective, index) => ({template, property, searchProperty: searchableBy, index}));
 
     this.flatTree = new FlatTree(levels);
     this.flatTree.nodes = this.config.nodes;

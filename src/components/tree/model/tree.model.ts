@@ -14,13 +14,14 @@ export interface TreeLevel {
     template: TemplateRef<any>;
     searchProperty?: string;
     property: string;
+    index: number;
 }
 
 export interface TreeNode {
-    template: TemplateRef<any>;
     ascendant?: TreeNode;
+    // treeLevel: TreeLevel;
+    level: TreeLevel;
     index: number;
-    level: number;
     item: any;
 }
 
@@ -40,7 +41,7 @@ export class FlatTree {
     }
 
     public set nodes(nodes: any[]) {
-        this.toFlatTree(nodes);
+        this.toFlatTree(nodes, this.getTreeLevel(0));
     }
 
     public get nodes(): TreeNode[] {
@@ -59,8 +60,8 @@ export class FlatTree {
             map(({search, showAscendants}: SearchEvent) => ({showAscendants, search: this.formatSearch(search)}))
         ).subscribe(({search, showAscendants}: SearchEvent) => {
             const filtered = this._nodes.filter((node: TreeNode) => {
-                const property = this.getSearchProperty(node.level);
-                const filter = property ? this.formatSearch(node.item[property]) : '';
+                const property = node.level.searchProperty ?? '';
+                const filter = this.formatSearch(node.item[property]);
                 return filter.includes(search)
             });
 
@@ -75,16 +76,16 @@ export class FlatTree {
         });
     }
 
-    private toFlatTree(nodes: any[], level = 0, ascendant?: TreeNode){
+    private toFlatTree(nodes: any[], level: TreeLevel, ascendant?: TreeNode){
         nodes.forEach((node: any, index) => this.addNode(node, index, level, ascendant));
     }
     
-    private addNode(item: any, index: number, level = 0, ascendant?: TreeNode){
-        const node = {item, template: this.getTemplate(level), index, level, ascendant}
+    private addNode(item: any, index: number, level: TreeLevel, ascendant?: TreeNode){
+        const node = {item, index, level, ascendant}
         this._nodes.push(node);
 
-        const next = level + 1;
-        const child = node.item[this.getProperty(next)];
+        const next = this.getTreeLevel(level.index + 1);
+        const child = node.item[next.property];
 
         if(child){
             this.toFlatTree(child, next, node);
@@ -100,21 +101,9 @@ export class FlatTree {
 
         nodes.push(node);
     }
-    
-    
-    private getTemplate(level: number): TemplateRef<any> {
-        const {template} = this.levels[level] ?? {};
-        return template;
-    }
 
-    private getProperty(level: number): string {
-        const {property} = this.levels[level] ?? {};
-        return property;
-    }
-
-    private getSearchProperty(level: number): string | undefined {
-        const {searchProperty} = this.levels[level] ?? {};
-        return searchProperty;
+    private getTreeLevel(level: number): TreeLevel {
+        return this.levels[level] ?? {};
     }
 
     private formatSearch(search: string): string {
