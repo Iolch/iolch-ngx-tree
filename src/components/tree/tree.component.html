@@ -3,6 +3,10 @@
         <ng-container *ngFor="let node of flatTree.filtered">
             <ng-container *ngTemplateOutlet="node.template; context: {$implicit: node.item, index: node.index, level: node.level}"></ng-container>
         </ng-container>
+
+        <ng-container *ngIf="flatTree.filtered.length === 0">
+            <ng-container *ngTemplateOutlet="emptySearchTemplate"></ng-container>
+        </ng-container>
     </ng-container>
 
     <ng-container *ngIf="!flatTree.filtered">
