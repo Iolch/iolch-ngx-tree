@@ -1,3 +1,3 @@
-export const formatString = (data: string): string => {
+export const stringFormatter = (data: string): string => {
     return data.toLowerCase().trim();
 };

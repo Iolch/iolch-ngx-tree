@@ -1,15 +1,24 @@
 import { TemplateRef } from "@angular/core";
 import { Subject, debounceTime, filter, map, tap } from "rxjs";
 
-import { formatString } from "src/utils";
+import { stringFormatter } from "src/utils";
 
-export interface SearchEvent {
-    search: string;
-    includeAscendants: boolean;
+export class SearchEvent {
+    public readonly search: string;
+    public readonly includeAscendants: boolean;
+    public readonly formatter: (data: string) => string;
+
+    constructor(data: any) {
+        this.formatter = data?.formatter ?? stringFormatter;
+        this.includeAscendants = data.includeAscendants ?? false;
+        this.search = this.formatter(data.search);
+    }
 }
+
 export interface NgxTreeConfig<T> {
     nodes: T[];
     includeAscendantsOnSearch?: boolean;
+    searchFormatter?: (data: string) => string;
 };
 
 export class TreeLevel {
@@ -73,9 +82,8 @@ export class FlatTree {
             debounceTime(300),
             tap(() => delete this._filtered),
             filter(({search}: SearchEvent) => !!search),
-            map(({search, includeAscendants}: SearchEvent) => ({includeAscendants, search: formatString(search)}))
-            ).subscribe(({search, includeAscendants}: SearchEvent) => {
-                const filtered = this._nodes.filter((node: TreeNode) => formatString(node.item[node.level.searchProperty]).includes(search));
+            ).subscribe(({search, includeAscendants, formatter}: SearchEvent) => {
+                const filtered = this._nodes.filter((node: TreeNode) => formatter(node.item[node.level.searchProperty]).includes(search));
 
                 if(includeAscendants){
                     const filteredWithAscendants: TreeNode[] = [];

@@ -2,7 +2,7 @@ import { Component, ContentChild, ContentChildren, Input, QueryList, TemplateRef
 
 import { NgxEmptySearch } from './empty-search.directive';
 import { NgxTreeLevelDirective } from './tree-level.directive';
-import { FlatTree, NgxTreeConfig, TreeLevel } from './model/tree.model';
+import { FlatTree, NgxTreeConfig, SearchEvent, TreeLevel } from './model/tree.model';
 
 @Component({
   selector: 'ngx-tree',
@@ -29,7 +29,8 @@ export class NgxTreeComponent {
   }  
 
   public search(search: string): void {
-    const { includeAscendantsOnSearch: includeAscendants = false} = this.config;
-    this.flatTree.search.next({search, includeAscendants});
+    const { includeAscendantsOnSearch: includeAscendants, searchFormatter: formatter} = this.config;
+    const event = new SearchEvent({search, includeAscendants, formatter});
+    this.flatTree.search.next(event);
   }
 }
