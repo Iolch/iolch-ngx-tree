@@ -55,6 +55,10 @@ export class TreeNode {
         this.ascendant = data.ascendant;
         this.relativeIndex = data.relativeIndex;
     }
+
+    public get searchRef(): string {
+        return this.item[this.level.searchProperty];
+    }
 }
 
 
@@ -100,14 +104,14 @@ export class FlatTree {
             switchMap((event: SearchEvent) => iif(() => event.includeAscendants, $filteredWithAscendants(event), $filtered(event)))
             ).subscribe((filtered: TreeNode[]) => this._filtered = filtered);
     }
-
-    private toFlatTree(nodes: any[], level: TreeLevel, ascendant?: TreeNode){
-        nodes.forEach((node: any, relativeIndex) => this.addNode(node, relativeIndex, level, ascendant));
-    }
     
     private matchNodesToSearch(event: SearchEvent): TreeNode[] {
         const {formatter, search} = event;
-        return this._nodes.filter((node: TreeNode) => formatter(node.item[node.level.searchProperty]).includes(search));
+        return this._nodes.filter((node: TreeNode) => formatter(node.searchRef).includes(search));
+    }
+
+    private toFlatTree(nodes: any[], level: TreeLevel, ascendant?: TreeNode){
+        nodes.forEach((node: any, relativeIndex) => this.addNode(node, relativeIndex, level, ascendant));
     }
 
     private addNode(item: any, relativeIndex: number, level: TreeLevel, ascendant?: TreeNode){
