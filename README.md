@@ -26,10 +26,6 @@ This tree component its useful when you have a multilevel tree, that needs to ha
 |  includeAscendantsOnSearch  |  boolean | Determines whether ascendants should appear on search  |
 |  searchFormatter  |  (data: string) => string | Determines another way of making the search |
 
-
-# Events
-
-
 ## Tree declaration
 
 If you have a structure that looks like this:
