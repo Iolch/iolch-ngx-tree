@@ -33,7 +33,7 @@ If you have a structure that looks like this:
 ```
 interface Root {
   description: string;
-  child?: Child[];
+  child: Child[];
 }
 
 interface Child {
